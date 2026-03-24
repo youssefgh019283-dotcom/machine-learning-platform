@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ML Academy — Master Machine Learning</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#07090f;--bg2:#0d1220;--bg3:#131b2e;--card:#0f1826;
+  --border:#1a2540;--border2:#223060;
+  --blue:#4f8ef7;--purple:#7c3aed;--green:#10b981;--amber:#f59e0b;--red:#ef4444;--pink:#ec4899;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#4a5a78;
+  --mono:'JetBrains Mono',monospace;--sans:'Space Grotesk',sans-serif;--serif:'Playfair Display',serif;
+  --page-color:#4f8ef7;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* THREE.JS CANVAS */
+#three-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+
+/* EVERYTHING OVER THREE.JS */
+.ui-layer{position:relative;z-index:1;}
+
+/* HERO */
+.hero{padding:70px 20px 50px;text-align:center;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(79,142,247,0.08);border:1px solid rgba(79,142,247,0.25);color:var(--blue);padding:6px 18px;border-radius:30px;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:28px;transition:all 0.4s;}
+.hero-eyebrow.green-mode{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.25);color:var(--green);}
+.hero-eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;animation:blink 1.8s infinite;}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.hero h1{font-family:var(--serif);font-size:clamp(2.8rem,7vw,5rem);color:#fff;line-height:1.05;margin-bottom:14px;}
+.hero h1 .accent{background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;transition:all 0.4s;}
+.hero h1 .accent.green-grad{background:linear-gradient(135deg,var(--green),#059669);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{color:var(--text2);font-size:1.05rem;max-width:560px;margin:0 auto 44px;line-height:1.75;}
+
+/* PAGE SWITCHER */
+.page-switcher{display:inline-flex;background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:50px;padding:5px;gap:4px;margin-bottom:40px;}
+.page-btn{padding:11px 32px;border-radius:40px;border:none;cursor:pointer;font-family:var(--sans);font-size:14px;font-weight:600;letter-spacing:.5px;transition:all 0.35s cubic-bezier(.4,0,.2,1);color:var(--text3);background:transparent;position:relative;overflow:hidden;}
+.page-btn::before{content:'';position:absolute;inset:0;border-radius:40px;opacity:0;transition:opacity 0.3s;}
+.page-btn.active-sup{color:#fff;background:linear-gradient(135deg,var(--blue),var(--purple));box-shadow:0 4px 24px rgba(79,142,247,.4);}
+.page-btn.active-unsup{color:#fff;background:linear-gradient(135deg,var(--green),#059669);box-shadow:0 4px 24px rgba(16,185,129,.4);}
+.page-btn:not([class*="active"]):hover{color:var(--text);background:rgba(255,255,255,0.06);}
+
+/* NAV */
+.nav-container{position:sticky;top:0;z-index:100;background:rgba(7,9,15,0.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);}
+.nav-inner{max-width:1140px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none;}
+.nav-inner::-webkit-scrollbar{display:none;}
+.nav-tab{flex-shrink:0;padding:15px 18px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .25s;white-space:nowrap;position:relative;}
+.nav-tab:hover{color:var(--text);}
+.nav-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.nav-tab.active.unsup-tab{color:var(--green);border-bottom-color:var(--green);}
+.nav-tab .ti{margin-right:7px;font-size:14px;}
+.nav-page{display:none;}
+.nav-page.visible{display:flex;}
+
+/* CONTENT */
+.content{max-width:1140px;margin:0 auto;padding:44px 20px 80px;}
+.section{display:none;animation:fadeUp .4s ease;}
+.section.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* ALGO CARDS */
+.algo-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:32px;margin-bottom:28px;position:relative;overflow:hidden;transition:transform .35s cubic-bezier(.4,0,.2,1),box-shadow .35s,border-color .35s;}
+.algo-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--purple));}
+.algo-card.green::before{background:linear-gradient(90deg,var(--green),#059669);}
+.algo-card.amber::before{background:linear-gradient(90deg,var(--amber),#d97706);}
+.algo-card.red::before{background:linear-gradient(90deg,var(--red),#dc2626);}
+.algo-card.purple::before{background:linear-gradient(90deg,var(--purple),#6d28d9);}
+.algo-card.teal::before{background:linear-gradient(90deg,#06b6d4,#0891b2);}
+.algo-card.pink::before{background:linear-gradient(90deg,var(--pink),#db2777);}
+/* Hover */
+.algo-card:hover{transform:translateY(-5px) scale(1.005);border-color:var(--border2);box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 0 1px rgba(79,142,247,.12),inset 0 1px 0 rgba(255,255,255,.05);}
+.algo-card.green:hover{box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 0 1px rgba(16,185,129,.15),inset 0 1px 0 rgba(255,255,255,.05);}
+.algo-card.purple:hover{box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 0 1px rgba(124,58,237,.15),inset 0 1px 0 rgba(255,255,255,.05);}
+.algo-card.amber:hover{box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 0 1px rgba(245,158,11,.15),inset 0 1px 0 rgba(255,255,255,.05);}
+.algo-card.red:hover{box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 0 1px rgba(239,68,68,.15),inset 0 1px 0 rgba(255,255,255,.05);}
+.algo-card.teal:hover{box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 0 1px rgba(6,182,212,.15),inset 0 1px 0 rgba(255,255,255,.05);}
+.algo-card.pink:hover{box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 0 1px rgba(236,72,153,.15),inset 0 1px 0 rgba(255,255,255,.05);}
+
+/* Glow hover shimmer */
+.algo-card::after{content:'';position:absolute;inset:0;border-radius:18px;background:radial-gradient(600px circle at var(--mouse-x,50%) var(--mouse-y,50%),rgba(79,142,247,.04),transparent 40%);opacity:0;transition:opacity .3s;pointer-events:none;}
+.algo-card:hover::after{opacity:1;}
+
+.algo-header{display:flex;align-items:flex-start;gap:18px;margin-bottom:22px;}
+.algo-icon{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:rgba(79,142,247,.1);transition:transform .3s;}
+.algo-card:hover .algo-icon{transform:scale(1.1) rotate(-3deg);}
+.algo-icon.green{background:rgba(16,185,129,.1);}
+.algo-icon.amber{background:rgba(245,158,11,.1);}
+.algo-icon.red{background:rgba(239,68,68,.1);}
+.algo-icon.purple{background:rgba(124,58,237,.1);}
+.algo-icon.teal{background:rgba(6,182,212,.1);}
+.algo-icon.pink{background:rgba(236,72,153,.1);}
+.algo-title{font-size:1.45rem;font-weight:700;color:#fff;margin-bottom:5px;}
+.algo-subtitle{color:var(--text2);font-size:.9rem;line-height:1.65;}
+
+/* LAYOUT */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+@media(max-width:820px){.two-col,.grid-3{grid-template-columns:1fr;}}
+
+/* INFO BOX */
+.info-box{background:rgba(255,255,255,0.025);border:1px solid var(--border);border-radius:12px;padding:18px;transition:border-color .3s;}
+.info-box:hover{border-color:var(--border2);}
+.info-box h4{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:11px;}
+.info-box p,.info-box li{font-size:13.5px;color:var(--text2);line-height:1.7;}
+.info-box ul{padding-left:16px;}
+.info-box li{margin-bottom:5px;}
+
+/* FORMULA */
+.formula-box{background:var(--bg);border:1px solid rgba(79,142,247,.25);border-radius:12px;padding:18px;text-align:center;margin:16px 0;transition:border-color .3s,box-shadow .3s;}
+.formula-box:hover{border-color:rgba(79,142,247,.5);box-shadow:0 0 20px rgba(79,142,247,.08);}
+.formula{font-family:var(--mono);font-size:1.05rem;color:var(--blue);letter-spacing:.3px;}
+.formula-label{font-size:11.5px;color:var(--text3);margin-top:7px;}
+
+/* CANVAS */
+.canvas-wrap{background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;position:relative;transition:border-color .3s;}
+.canvas-wrap:hover{border-color:var(--border2);}
+.canvas-wrap canvas{display:block;width:100%;}
+.canvas-controls{padding:14px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;border-top:1px solid var(--border);}
+.canvas-hint{position:absolute;top:10px;right:10px;background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);color:var(--text2);font-size:10.5px;padding:5px 10px;border-radius:6px;pointer-events:none;}
+
+/* BUTTONS */
+.btn{padding:7px 16px;border-radius:8px;border:none;cursor:pointer;font-family:var(--sans);font-size:12.5px;font-weight:600;transition:all .2s;position:relative;overflow:hidden;}
+.btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.1);opacity:0;transition:opacity .2s;}
+.btn:hover::after{opacity:1;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-secondary{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);}
+.btn-danger{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.25);}
+.btn-green{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.25);}
+.btn-purple{background:rgba(124,58,237,.12);color:#a78bfa;border:1px solid rgba(124,58,237,.25);}
+.btn-teal{background:rgba(6,182,212,.12);color:#22d3ee;border:1px solid rgba(6,182,212,.25);}
+
+/* SLIDER */
+.slider-group{display:flex;align-items:center;gap:9px;}
+.slider-group label{font-size:11.5px;color:var(--text3);white-space:nowrap;}
+.slider-group input[type=range]{width:90px;accent-color:var(--blue);cursor:pointer;}
+.slider-val{font-family:var(--mono);font-size:11.5px;color:var(--blue);min-width:28px;}
+
+/* TAGS */
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;margin:2px;}
+.tag-blue{background:rgba(79,142,247,.14);color:var(--blue);}
+.tag-green{background:rgba(16,185,129,.14);color:var(--green);}
+.tag-amber{background:rgba(245,158,11,.14);color:var(--amber);}
+.tag-red{background:rgba(239,68,68,.14);color:var(--red);}
+.tag-purple{background:rgba(124,58,237,.14);color:#a78bfa;}
+.tag-teal{background:rgba(6,182,212,.14);color:#22d3ee;}
+.tag-pink{background:rgba(236,72,153,.14);color:var(--pink);}
+
+/* STEPS */
+.steps{counter-reset:step;}
+.step{display:flex;gap:14px;margin-bottom:17px;}
+.step-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:rgba(79,142,247,.13);border:1px solid rgba(79,142,247,.28);color:var(--blue);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.step-content{font-size:13.5px;color:var(--text2);line-height:1.7;padding-top:3px;}
+.step-content strong{color:var(--text);}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-top:14px;}
+.metric{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;transition:border-color .25s,transform .25s;}
+.metric:hover{border-color:var(--border2);transform:translateY(-2px);}
+.metric-val{font-family:var(--mono);font-size:1.35rem;font-weight:600;color:var(--blue);}
+.metric-label{font-size:10.5px;color:var(--text3);margin-top:3px;}
+
+/* LEGEND */
+.legend{display:flex;flex-wrap:wrap;gap:12px;padding:10px 14px;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text2);}
+.legend-dot{width:9px;height:9px;border-radius:50%;}
+.legend-line{width:18px;height:2px;border-radius:1px;}
+
+/* CONCEPT CARDS */
+.concept-card{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:12px;padding:18px;transition:all .3s;}
+.concept-card:hover{border-color:var(--border2);transform:translateY(-3px);background:rgba(255,255,255,.04);}
+.concept-card h4{font-size:13.5px;font-weight:600;color:#fff;margin-bottom:8px;}
+.concept-card p{font-size:13px;color:var(--text2);line-height:1.6;}
+
+/* PROGRESS BAR */
+.progress-bar{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-top:6px;}
+.progress-fill{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+
+/* SECTION HEADER */
+.section-header{margin-bottom:30px;}
+.section-header h2{font-size:1.9rem;font-weight:700;color:#fff;margin-bottom:7px;}
+.section-header p{color:var(--text2);line-height:1.7;}
+
+/* TABLE */
+.comp-table{width:100%;border-collapse:collapse;font-size:13px;}
+.comp-table th{padding:9px 13px;text-align:left;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border);font-size:10.5px;text-transform:uppercase;letter-spacing:1px;}
+.comp-table td{padding:11px 13px;color:var(--text2);border-bottom:1px solid rgba(26,37,64,.5);}
+.comp-table tr:hover td{background:rgba(255,255,255,.02);}
+
+/* DIVIDER */
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:32px 0;}
+</style>
+</head>
+<body>
+
+<!-- THREE.JS BACKGROUND -->
+<canvas id="three-canvas"></canvas>
+
+<div class="ui-layer">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow" id="hero-eyebrow">Interactive Learning Platform</div>
+  <h1>Machine Learning<br><span class="accent" id="hero-accent">Academy</span></h1>
+  <p>Master supervised & unsupervised algorithms through live interactive visualizations, intuitive math, and hands-on experimentation.</p>
+
+  <!-- PAGE SWITCHER -->
+  <div class="page-switcher">
+    <button class="page-btn active-sup" id="btn-sup" onclick="switchPage('supervised')">🎓 Supervised Learning</button>
+    <button class="page-btn" id="btn-unsup" onclick="switchPage('unsupervised')">🔍 Unsupervised Learning</button>
+  </div>
+</div>
+
+<!-- NAV - SUPERVISED -->
+<div class="nav-container">
+  <div class="nav-inner nav-page visible" id="nav-supervised">
+    <div class="nav-tab active" onclick="showSection('sup-overview',this)"><span class="ti">🗺️</span>Overview</div>
+    <div class="nav-tab" onclick="showSection('sup-linear-simple',this)"><span class="ti">📈</span>Simple Linear Reg.</div>
+    <div class="nav-tab" onclick="showSection('sup-linear-multi',this)"><span class="ti">🔢</span>Multiple Linear Reg.</div>
+    <div class="nav-tab" onclick="showSection('sup-logistic',this)"><span class="ti">🔀</span>Logistic Regression</div>
+    <div class="nav-tab" onclick="showSection('sup-knn',this)"><span class="ti">🎯</span>KNN</div>
+    <div class="nav-tab" onclick="showSection('sup-dtree',this)"><span class="ti">🌳</span>Decision Tree</div>
+    <div class="nav-tab" onclick="showSection('sup-naive',this)"><span class="ti">📊</span>Naive Bayes</div>
+  </div>
+  <div class="nav-inner nav-page" id="nav-unsupervised">
+    <div class="nav-tab active unsup-tab" onclick="showSection('un-overview',this)"><span class="ti">🗺️</span>Overview</div>
+    <div class="nav-tab" onclick="showSection('un-kmeans',this)"><span class="ti">🔵</span>K-Means Clustering</div>
+    <div class="nav-tab" onclick="showSection('un-pca',this)"><span class="ti">🧬</span>PCA</div>
+    <div class="nav-tab" onclick="showSection('un-dbscan',this)"><span class="ti">🌐</span>DBSCAN</div>
+    <div class="nav-tab" onclick="showSection('un-hierarchical',this)"><span class="ti">🌲</span>Hierarchical Clustering</div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ============================================================ -->
+<!-- SUPERVISED SECTIONS -->
+<!-- ============================================================ -->
+
+<!-- SUPERVISED OVERVIEW -->
+<div id="sup-overview" class="section active">
+  <div class="section-header">
+    <h2>Supervised Learning</h2>
+    <p>The algorithm learns a mapping Y = f(X) from labeled training data — where both inputs and correct outputs are provided.</p>
+  </div>
+  <div class="algo-card" style="margin-bottom:28px;">
+    <div class="algo-header">
+      <div class="algo-icon">🎓</div>
+      <div>
+        <div class="algo-title">What is Supervised Learning?</div>
+        <div class="algo-subtitle">Given a dataset of (input, label) pairs, the algorithm adjusts its internal parameters to minimize prediction error. Once trained, it can predict labels for new, unseen inputs.</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-content"><strong>Collect labeled data</strong> — pairs of (input X, correct output Y)</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-content"><strong>Train the model</strong> — minimize a loss function via OLS or gradient descent</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-content"><strong>Validate</strong> — evaluate generalization on a held-out test set</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-content"><strong>Predict</strong> — apply to new data</div></div>
+        </div>
+        <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:5px;">
+          <span class="tag tag-blue">Linear Regression</span><span class="tag tag-blue">Logistic Regression</span><span class="tag tag-blue">KNN</span><span class="tag tag-blue">Decision Tree</span><span class="tag tag-blue">Naive Bayes</span><span class="tag tag-blue">SVM</span><span class="tag tag-blue">Neural Networks</span>
+        </div>
+      </div>
+      <div>
+        <div class="info-box">
+          <h4>Two main tasks</h4>
+          <ul>
+            <li><strong style="color:#fff">Regression</strong> — output is a continuous number (e.g., house price, temperature)</li>
+            <li><strong style="color:#fff">Classification</strong> — output is a discrete class label (e.g., spam/ham, cat/dog)</li>
+          </ul>
+        </div>
+        <div class="info-box" style="margin-top:12px;">
+          <h4>Key metrics</h4>
+          <ul>
+            <li>Regression: MSE, RMSE, MAE, R²</li>
+            <li>Classification: Accuracy, Precision, Recall, F1, AUC-ROC</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="algo-card amber">
+    <div class="algo-title" style="margin-bottom:18px;">Algorithm Comparison</div>
+    <table class="comp-table">
+      <thead><tr><th>Algorithm</th><th>Task</th><th>Output</th><th>Training Speed</th><th>Interpretable</th></tr></thead>
+      <tbody>
+        <tr><td><strong style="color:#fff">Simple Linear Regression</strong></td><td>Regression</td><td>Continuous</td><td>⚡ Very fast</td><td>✅ Yes</td></tr>
+        <tr><td><strong style="color:#fff">Multiple Linear Regression</strong></td><td>Regression</td><td>Continuous</td><td>⚡ Very fast</td><td>✅ Yes</td></tr>
+        <tr><td><strong style="color:#fff">Logistic Regression</strong></td><td>Classification</td><td>Probability</td><td>⚡ Fast</td><td>✅ Yes</td></tr>
+        <tr><td><strong style="color:#fff">KNN</strong></td><td>Both</td><td>Class / Value</td><td>🔴 No training</td><td>✅ Yes</td></tr>
+        <tr><td><strong style="color:#fff">Decision Tree</strong></td><td>Both</td><td>Class / Value</td><td>🟡 Moderate</td><td>✅ Yes</td></tr>
+        <tr><td><strong style="color:#fff">Naive Bayes</strong></td><td>Classification</td><td>Probability</td><td>⚡ Very fast</td><td>✅ Yes</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SIMPLE LINEAR REGRESSION -->
+<div id="sup-linear-simple" class="section">
+  <div class="section-header">
+    <h2>📈 Simple Linear Regression</h2>
+    <p>Find the best-fit line through data points to predict a continuous output from a single input feature.</p>
+  </div>
+  <div class="algo-card">
+    <div class="two-col">
+      <div>
+        <div class="info-box" style="margin-bottom:14px;">
+          <h4>Core Idea</h4>
+          <p>Assume a linear relationship Y ≈ β₀ + β₁X. Find coefficients that minimize total squared error (residuals).</p>
+        </div>
+        <div class="formula-box"><div class="formula">ŷ = β₀ + β₁·X</div><div class="formula-label">ŷ = prediction &nbsp;|&nbsp; β₀ = intercept &nbsp;|&nbsp; β₁ = slope</div></div>
+        <div class="formula-box"><div class="formula">Loss = (1/n)·Σ(yᵢ − ŷᵢ)²</div><div class="formula-label">Mean Squared Error — what we minimize</div></div>
+        <div class="info-box" style="margin-bottom:14px;">
+          <h4>OLS Closed-form Solution</h4>
+          <ul>
+            <li><strong style="color:#fff">β₁</strong> = Σ(xᵢ−x̄)(yᵢ−ȳ) / Σ(xᵢ−x̄)²</li>
+            <li><strong style="color:#fff">β₀</strong> = ȳ − β₁·x̄</li>
+          </ul>
+        </div>
+        <div class="info-box">
+          <h4>R² — Coefficient of Determination</h4>
+          <p>R² = 1 − SS_res/SS_tot. Ranges 0→1. Higher = better fit. 1 = perfect, 0 = no better than mean.</p>
+        </div>
+      </div>
+      <div>
+        <div class="canvas-wrap">
+          <div class="canvas-hint">Click to add data points</div>
+          <canvas id="slr-canvas" height="300"></canvas>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#4f8ef7;"></div>Data</div>
+            <div class="legend-item"><div class="legend-line" style="background:#f59e0b;"></div>Regression line</div>
+            <div class="legend-item"><div class="legend-line" style="background:rgba(239,68,68,.5);"></div>Residuals</div>
+          </div>
+          <div class="canvas-controls">
+            <button class="btn btn-danger" onclick="clearSLR()">Clear</button>
+            <button class="btn btn-secondary" onclick="generateSLR()">Auto-generate</button>
+            <span style="font-family:var(--mono);font-size:11px;color:var(--text2);margin-left:auto;" id="slr-eq"></span>
+          </div>
+        </div>
+        <div class="metrics" id="slr-metrics" style="display:none;">
+          <div class="metric"><div class="metric-val" id="slr-r2">—</div><div class="metric-label">R² Score</div></div>
+          <div class="metric"><div class="metric-val" id="slr-mse">—</div><div class="metric-label">MSE</div></div>
+          <div class="metric"><div class="metric-val" id="slr-slope">—</div><div class="metric-label">Slope β₁</div></div>
+          <div class="metric"><div class="metric-val" id="slr-b0">—</div><div class="metric-label">Intercept β₀</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="grid-3">
+    <div class="concept-card"><h4>📌 Assumptions</h4><p>Linearity, independence, homoscedasticity (constant variance), normality of residuals.</p></div>
+    <div class="concept-card"><h4>📌 Gradient Descent Alt.</h4><p>Iteratively update β₁ -= α·∂L/∂β₁ until convergence. Works when OLS is too expensive.</p></div>
+    <div class="concept-card"><h4>📌 When to use</h4><p>Baseline prediction, continuous target, when interpretability matters more than raw performance.</p></div>
+  </div>
+</div>
+
+<!-- MULTIPLE LINEAR REGRESSION -->
+<div id="sup-linear-multi" class="section">
+  <div class="section-header">
+    <h2>🔢 Multiple Linear Regression</h2>
+    <p>Extend to multiple input features — the line becomes a hyperplane in n-dimensional feature space.</p>
+  </div>
+  <div class="algo-card">
+    <div class="formula-box"><div class="formula">ŷ = β₀ + β₁X₁ + β₂X₂ + ··· + βₙXₙ</div><div class="formula-label">Each feature Xᵢ has its own coefficient βᵢ representing its independent contribution</div></div>
+    <div class="two-col">
+      <div>
+        <div class="info-box" style="margin-bottom:14px;">
+          <h4>Matrix Form</h4>
+          <p style="font-family:var(--mono);font-size:13px;color:var(--blue);margin-bottom:8px;">ŷ = X·β</p>
+          <p>OLS closed-form solution:</p>
+          <p style="font-family:var(--mono);font-size:12.5px;color:var(--blue);margin-top:8px;">β = (XᵀX)⁻¹ Xᵀy</p>
+        </div>
+        <div class="info-box">
+          <h4>Key Considerations</h4>
+          <ul>
+            <li><strong style="color:#fff">Multicollinearity</strong> — correlated features inflate coefficient variance (check VIF)</li>
+            <li><strong style="color:#fff">Feature scaling</strong> — standardize for comparable coefficients</li>
+            <li><strong style="color:#fff">Adjusted R²</strong> — penalizes adding useless features</li>
+            <li><strong style="color:#fff">Ridge / Lasso</strong> — regularization to prevent overfitting</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="info-box" style="margin-bottom:14px;">
+          <h4>Feature Coefficients — House Price Model</h4>
+          <div id="mlr-bars" style="margin-top:10px;"></div>
+        </div>
+        <div class="algo-card amber" style="padding:20px;margin-bottom:0;">
+          <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">🏠 Live Price Simulator</div>
+          <div class="slider-group" style="margin-bottom:12px;"><label>Size (m²)</label><input type="range" min="50" max="300" value="120" id="mlr-size" oninput="updateMLR()"><span class="slider-val" id="mlr-size-v">120</span></div>
+          <div class="slider-group" style="margin-bottom:12px;"><label>Bedrooms</label><input type="range" min="1" max="6" value="3" id="mlr-beds" oninput="updateMLR()"><span class="slider-val" id="mlr-beds-v">3</span></div>
+          <div class="slider-group" style="margin-bottom:12px;"><label>Age (yrs)</label><input type="range" min="0" max="50" value="10" id="mlr-age" oninput="updateMLR()"><span class="slider-val" id="mlr-age-v">10</span></div>
+          <div class="slider-group" style="margin-bottom:18px;"><label>Distance (km)</label><input type="range" min="0" max="30" value="5" id="mlr-dist" oninput="updateMLR()"><span class="slider-val" id="mlr-dist-v">5</span></div>
+          <div style="text-align:center;"><div style="font-size:11px;color:var(--text3);margin-bottom:6px;">PREDICTED PRICE</div><div style="font-size:2.2rem;font-weight:700;color:var(--amber);font-family:var(--mono);" id="mlr-price">$0</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGISTIC REGRESSION -->
+<div id="sup-logistic" class="section">
+  <div class="section-header">
+    <h2>🔀 Logistic Regression</h2>
+    <p>Despite the name, this is a <strong style="color:#fff">classification</strong> algorithm. It uses the sigmoid function to output probabilities of belonging to a class.</p>
+  </div>
+  <div class="algo-card purple">
+    <div class="two-col">
+      <div>
+        <div class="info-box" style="margin-bottom:14px;">
+          <h4>Why Not Linear for Classification?</h4>
+          <p>A linear model can output values outside [0,1]. We need probabilities — so we squash the linear output through the <strong style="color:#fff">sigmoid function</strong>.</p>
+        </div>
+        <div class="formula-box"><div class="formula">σ(z) = 1 / (1 + e⁻ᶻ)</div><div class="formula-label">Sigmoid squashes any real number to (0, 1)</div></div>
+        <div class="formula-box"><div class="formula">z = β₀ + β₁X₁ + β₂X₂</div><div class="formula-label">Linear combination fed into sigmoid</div></div>
+        <div class="formula-box"><div class="formula">Loss = −Σ[yᵢlog(ŷᵢ) + (1−yᵢ)log(1−ŷᵢ)]</div><div class="formula-label">Binary Cross-Entropy Loss — minimized via Gradient Descent</div></div>
+        <div class="info-box">
+          <h4>Decision Rule</h4>
+          <ul>
+            <li>If P(y=1|X) ≥ 0.5 → <strong style="color:var(--red)">Class 1</strong></li>
+            <li>If P(y=1|X) &lt; 0.5 → <strong style="color:var(--blue)">Class 0</strong></li>
+            <li>Threshold can be tuned for precision/recall tradeoff</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="canvas-wrap" style="margin-bottom:14px;">
+          <div class="canvas-hint">Click to add points</div>
+          <canvas id="logistic-canvas" height="280"></canvas>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#4f8ef7;"></div>Class A</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div>Class B</div>
+            <div class="legend-item"><div class="legend-line" style="background:#f59e0b;"></div>Decision boundary</div>
+          </div>
+          <div class="canvas-controls">
+            <button class="btn btn-danger" onclick="clearLogistic()">Clear</button>
+            <button class="btn btn-secondary" onclick="generateLogistic()">Generate</button>
+          </div>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="sigmoid-canvas" height="160"></canvas>
+          <div class="canvas-controls">
+            <div class="slider-group"><label>Steepness k</label><input type="range" min="1" max="20" value="5" id="sig-k" oninput="drawSigmoid()"><span class="slider-val" id="sig-k-v">5</span></div>
+            <div class="slider-group"><label>Shift x₀</label><input type="range" min="-5" max="5" value="0" id="sig-x0" oninput="drawSigmoid()"><span class="slider-val" id="sig-x0-v">0</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KNN -->
+<div id="sup-knn" class="section">
+  <div class="section-header">
+    <h2>🎯 K-Nearest Neighbors (KNN)</h2>
+    <p>The simplest ML idea: a new point gets the class of its K closest neighbors. No training phase — it memorizes everything.</p>
+  </div>
+  <div class="algo-card red">
+    <div class="two-col">
+      <div>
+        <div class="info-box" style="margin-bottom:14px;">
+          <h4>The Algorithm</h4>
+          <div class="steps">
+            <div class="step"><div class="step-num" style="border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.13);color:var(--red);">1</div><div class="step-content"><strong>Store all training data</strong> — no model, just memory</div></div>
+            <div class="step"><div class="step-num" style="border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.13);color:var(--red);">2</div><div class="step-content"><strong>Compute distances</strong> — to every stored point</div></div>
+            <div class="step"><div class="step-num" style="border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.13);color:var(--red);">3</div><div class="step-content"><strong>Find K nearest</strong> — sort by distance, take K closest</div></div>
+            <div class="step"><div class="step-num" style="border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.13);color:var(--red);">4</div><div class="step-content"><strong>Majority vote</strong> — assign the most common class</div></div>
+          </div>
+        </div>
+        <div class="formula-box"><div class="formula">d(p,q) = √Σ(pᵢ − qᵢ)²</div><div class="formula-label">Euclidean distance (Minkowski with p=2)</div></div>
+        <div class="info-box">
+          <h4>Choosing K</h4>
+          <ul>
+            <li>Small K → overfitting, jagged boundaries</li>
+            <li>Large K → underfitting, smoother boundaries</li>
+            <li>Rule of thumb: K = √n, use odd K for binary</li>
+            <li><strong style="color:#fff">Always scale features</strong> before using KNN!</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="canvas-wrap">
+          <div class="canvas-hint">Click to query a point</div>
+          <canvas id="knn-canvas" height="300"></canvas>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#4f8ef7;"></div>Class Blue</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div>Class Red</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;border:2px solid #fff;width:11px;height:11px;"></div>Query</div>
+          </div>
+          <div class="canvas-controls">
+            <div class="slider-group"><label>K =</label><input type="range" min="1" max="11" step="2" value="3" id="knn-k" oninput="updateKNN()"><span class="slider-val" id="knn-k-v">3</span></div>
+            <button class="btn btn-secondary" onclick="resetKNN()">Reset</button>
+          </div>
+        </div>
+        <div id="knn-result" style="padding:10px;font-size:12.5px;color:var(--text2);text-align:center;"></div>
+      </div>
+    </div>
+  </div>
+  <div class="grid-3">
+    <div class="concept-card"><h4>✅ Pros</h4><p>No training, naturally multi-class, no assumptions, intuitive, works for non-linear boundaries.</p></div>
+    <div class="concept-card"><h4>❌ Cons</h4><p>Slow at prediction O(n), memory heavy, sensitive to irrelevant features and scale.</p></div>
+    <div class="concept-card"><h4>💡 Weighted KNN</h4><p>Closer neighbors vote more: weight = 1/d². Improves accuracy near decision boundaries.</p></div>
+  </div>
+</div>
+
+<!-- DECISION TREE -->
+<div id="sup-dtree" class="section">
+  <div class="section-header">
+    <h2>🌳 Decision Tree</h2>
+    <p>A tree of yes/no questions about features. Each split maximizes information gain until reaching pure leaf nodes.</p>
+  </div>
+  <div class="algo-card green">
+    <div class="two-col">
+      <div>
+        <div class="formula-box"><div class="formula">Gini = 1 − Σ pᵢ²</div><div class="formula-label">0 = perfectly pure node, 0.5 = maximum disorder (binary)</div></div>
+        <div class="formula-box"><div class="formula">Entropy = −Σ pᵢ·log₂(pᵢ)</div><div class="formula-label">Information theoretic impurity measure</div></div>
+        <div class="formula-box"><div class="formula">IG = H(parent) − Σ wₖ·H(childₖ)</div><div class="formula-label">Information Gain — what we maximize at each split</div></div>
+        <div class="info-box" style="margin-top:14px;">
+          <h4>Stopping Criteria</h4>
+          <ul>
+            <li>max_depth reached</li>
+            <li>Node has fewer than min_samples</li>
+            <li>No split improves impurity</li>
+            <li>All samples belong to same class</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="canvas-wrap"><canvas id="tree-canvas" height="360"></canvas></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div style="font-size:14px;color:#fff;font-weight:600;margin-bottom:16px;">🧮 Gini Impurity Calculator</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;align-items:center;">
+      <div>
+        <div class="slider-group" style="margin-bottom:12px;"><label>Class A %</label><input type="range" min="0" max="100" value="50" id="gini-a" oninput="updateGini()"><span class="slider-val" id="gini-a-v">50%</span></div>
+        <div style="font-size:13px;color:var(--text2);">Class B = <span id="gini-b-v" style="color:var(--green);font-family:var(--mono);">50%</span></div>
+      </div>
+      <div class="canvas-wrap"><canvas id="gini-canvas" height="110"></canvas></div>
+      <div style="text-align:center;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:18px;">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px;">GINI IMPURITY</div>
+        <div style="font-size:2.2rem;font-weight:700;color:var(--green);font-family:var(--mono);" id="gini-val">0.5000</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px;" id="gini-lbl">Maximum disorder</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NAIVE BAYES -->
+<div id="sup-naive" class="section">
+  <div class="section-header">
+    <h2>📊 Naive Bayes Classifier</h2>
+    <p>A probabilistic classifier built on Bayes' theorem with a "naive" assumption that all features are conditionally independent given the class.</p>
+  </div>
+  <div class="algo-card amber">
+    <div class="two-col">
+      <div>
+        <div class="info-box" style="margin-bottom:14px;">
+          <h4>Bayes' Theorem</h4>
+          <p>Update our prior belief about a class after observing the data features:</p>
+        </div>
+        <div class="formula-box"><div class="formula">P(C|X) = P(X|C)·P(C) / P(X)</div><div class="formula-label">Posterior ∝ Likelihood × Prior</div></div>
+        <div class="info-box" style="margin-bottom:14px;">
+          <h4>Each term explained</h4>
+          <ul>
+            <li><strong style="color:#fff">P(C|X)</strong> — posterior: P(class | features) — what we want</li>
+            <li><strong style="color:#fff">P(X|C)</strong> — likelihood: P(features | class) — from training data</li>
+            <li><strong style="color:#fff">P(C)</strong> — prior: how common is class C in training data?</li>
+            <li><strong style="color:#fff">P(X)</strong> — evidence: normalizing constant, same for all classes</li>
+          </ul>
+        </div>
+        <div class="info-box" style="margin-bottom:14px;">
+          <h4>The "Naive" Independence Assumption</h4>
+          <p style="font-family:var(--mono);font-size:12px;color:var(--blue);margin-bottom:8px;">P(X|C) = P(x₁|C)·P(x₂|C)·…·P(xₙ|C)</p>
+          <p>Almost never truly true, but works surprisingly well — especially for text!</p>
+        </div>
+        <div class="info-box">
+          <h4>Variants</h4>
+          <ul>
+            <li><strong style="color:#fff">Gaussian NB</strong> — continuous features, assumes Gaussian distribution</li>
+            <li><strong style="color:#fff">Multinomial NB</strong> — text/count features</li>
+            <li><strong style="color:#fff">Bernoulli NB</strong> — binary features</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="algo-card" style="background:var(--bg);padding:22px;margin-bottom:14px;">
+          <div style="font-size:14px;color:#fff;font-weight:600;margin-bottom:14px;">🍄 Spam Detection — Worked Example</div>
+          <p style="font-size:12.5px;color:var(--text2);margin-bottom:14px;">Training: 100 emails — 60 ham, 40 spam</p>
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:13px;margin-bottom:16px;color:var(--text);">"Get <strong style="color:var(--amber);">FREE</strong> <strong style="color:var(--amber);">money</strong> now!"</div>
+          <div style="font-size:13px;color:var(--text2);line-height:2;">
+            <div><span style="color:var(--red);">P(Spam)</span> = 40/100 = <strong style="color:var(--amber);">0.40</strong></div>
+            <div><span style="color:var(--red);">P("FREE"|Spam)</span> = 35/40 = <strong style="color:var(--amber);">0.875</strong></div>
+            <div><span style="color:var(--red);">P("money"|Spam)</span> = 30/40 = <strong style="color:var(--amber);">0.75</strong></div>
+            <div style="margin-bottom:10px;">Score<sub>spam</sub> ∝ 0.40 × 0.875 × 0.75 = <strong style="color:var(--red);font-size:15px;">0.263</strong></div>
+            <div><span style="color:var(--blue);">P(Ham)</span> = 60/100 = <strong style="color:var(--blue);">0.60</strong></div>
+            <div><span style="color:var(--blue);">P("FREE"|Ham)</span> = 4/60 = <strong style="color:var(--blue);">0.067</strong></div>
+            <div><span style="color:var(--blue);">P("money"|Ham)</span> = 2/60 = <strong style="color:var(--blue);">0.033</strong></div>
+            <div style="margin-bottom:14px;">Score<sub>ham</sub> ∝ 0.60 × 0.067 × 0.033 = <strong style="color:var(--blue);font-size:15px;">0.0013</strong></div>
+          </div>
+          <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px;text-align:center;font-weight:600;color:var(--red);">0.263 ≫ 0.0013 → 🚫 SPAM DETECTED</div>
+        </div>
+        <div class="grid-3" style="grid-template-columns:1fr 1fr;">
+          <div class="concept-card"><h4>✅ Pros</h4><p>Fast, small data friendly, great for text, easy to update with new data.</p></div>
+          <div class="concept-card"><h4>❌ Cons</h4><p>Independence assumption broken in reality. Zero-frequency problem (fix with Laplace smoothing +1).</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- UNSUPERVISED SECTIONS -->
+<!-- ============================================================ -->
+
+<!-- UNSUPERVISED OVERVIEW -->
+<div id="un-overview" class="section">
+  <div class="section-header">
+    <h2>Unsupervised Learning</h2>
+    <p>Find hidden patterns in <strong style="color:#fff">unlabeled data</strong>. No correct answers are given — the algorithm must discover structure on its own.</p>
+  </div>
+  <div class="two-col" style="margin-bottom:28px;">
+    <div class="algo-card green" style="margin-bottom:0;">
+      <div class="algo-header">
+        <div class="algo-icon green">🔍</div>
+        <div>
+          <div class="algo-title">What is Unsupervised Learning?</div>
+          <div class="algo-subtitle">Given only inputs X (no labels Y), discover hidden patterns — clusters, low-dimensional structure, density regions, or association rules.</div>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="step-num" style="border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.13);color:var(--green);">1</div><div class="step-content"><strong>Raw unlabeled data</strong> — just inputs, no targets</div></div>
+        <div class="step"><div class="step-num" style="border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.13);color:var(--green);">2</div><div class="step-content"><strong>Discover structure</strong> — algorithm finds natural groupings or components</div></div>
+        <div class="step"><div class="step-num" style="border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.13);color:var(--green);">3</div><div class="step-content"><strong>Human interprets</strong> — domain expert makes sense of discovered patterns</div></div>
+      </div>
+    </div>
+    <div class="algo-card teal" style="margin-bottom:0;">
+      <div class="algo-title" style="margin-bottom:16px;">Categories of Unsupervised Learning</div>
+      <div class="info-box" style="margin-bottom:10px;"><h4>Clustering</h4><p>Group similar data points. K-Means, DBSCAN, Hierarchical. Used in customer segmentation, anomaly detection.</p></div>
+      <div class="info-box" style="margin-bottom:10px;"><h4>Dimensionality Reduction</h4><p>Compress data while preserving structure. PCA, t-SNE, Autoencoders. Used for visualization, denoising.</p></div>
+      <div class="info-box"><h4>Density Estimation</h4><p>Model the underlying data distribution. GMM, KDE. Used for anomaly detection, generative models.</p></div>
+    </div>
+  </div>
+  <div class="algo-card amber">
+    <div class="algo-title" style="margin-bottom:18px;">Algorithm Comparison</div>
+    <table class="comp-table">
+      <thead><tr><th>Algorithm</th><th>Type</th><th>Handles Noise</th><th>Needs K</th><th>Best For</th></tr></thead>
+      <tbody>
+        <tr><td><strong style="color:#fff">K-Means</strong></td><td><span class="tag tag-green">Clustering</span></td><td>❌ No</td><td>✅ Yes</td><td>Compact, spherical clusters</td></tr>
+        <tr><td><strong style="color:#fff">DBSCAN</strong></td><td><span class="tag tag-green">Clustering</span></td><td>✅ Yes</td><td>❌ No</td><td>Arbitrary shape clusters, anomaly detection</td></tr>
+        <tr><td><strong style="color:#fff">Hierarchical</strong></td><td><span class="tag tag-green">Clustering</span></td><td>🟡 Partial</td><td>❌ No (post-hoc)</td><td>When K is unknown, dendrogram analysis</td></tr>
+        <tr><td><strong style="color:#fff">PCA</strong></td><td><span class="tag tag-teal">Dim. Reduction</span></td><td>🟡 Partial</td><td>❌ No</td><td>Visualization, feature extraction</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- K-MEANS -->
+<div id="un-kmeans" class="section">
+  <div class="section-header">
+    <h2>🔵 K-Means Clustering</h2>
+    <p>Partition n observations into K clusters where each observation belongs to the cluster with the nearest centroid.</p>
+  </div>
+  <div class="algo-card green">
+    <div class="two-col">
+      <div>
+        <div class="info-box" style="margin-bottom:14px;">
+          <h4>Lloyd's Algorithm</h4>
+          <div class="steps">
+            <div class="step"><div class="step-num" style="border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.13);color:var(--green);">1</div><div class="step-content"><strong>Initialize K centroids</strong> — random selection or K-Means++</div></div>
+            <div class="step"><div class="step-num" style="border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.13);color:var(--green);">2</div><div class="step-content"><strong>Assign</strong> — each point → nearest centroid</div></div>
+            <div class="step"><div class="step-num" style="border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.13);color:var(--green);">3</div><div class="step-content"><strong>Update</strong> — move centroid to mean of its cluster</div></div>
+            <div class="step"><div class="step-num" style="border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.13);color:var(--green);">4</div><div class="step-content"><strong>Repeat</strong> 2–3 until convergence (no assignment changes)</div></div>
+          </div>
+        </div>
+        <div class="formula-box"><div class="formula">J = Σₖ Σ_{x∈Cₖ} ‖x − μₖ‖²</div><div class="formula-label">Minimize WCSS — Within-Cluster Sum of Squares</div></div>
+        <div class="info-box" style="margin-bottom:14px;">
+          <h4>Elbow Method for Choosing K</h4>
+          <p style="margin-bottom:8px;">Plot WCSS vs K. Pick K at the "elbow" where improvement slows down.</p>
+          <div class="canvas-wrap"><canvas id="elbow-canvas" height="110"></canvas></div>
+        </div>
+        <div class="info-box">
+          <h4>Limitations</h4>
+          <ul>
+            <li>Assumes spherical clusters of similar size</li>
+            <li>Sensitive to initialization (use K-Means++)</li>
+            <li>K must be specified in advance</li>
+            <li>Sensitive to outliers</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="canvas-wrap">
+          <div class="canvas-hint">Watch centroids converge!</div>
+          <canvas id="kmeans-canvas" height="300"></canvas>
+          <div class="legend" id="kmeans-legend"></div>
+          <div class="canvas-controls">
+            <div class="slider-group"><label>K =</label><input type="range" min="2" max="6" value="3" id="kmeans-k" oninput="document.getElementById('kmeans-k-v').textContent=this.value"><span class="slider-val" id="kmeans-k-v">3</span></div>
+            <button class="btn btn-green" onclick="runKMeans()">▶ Run</button>
+            <button class="btn btn-secondary" onclick="resetKMeans()">Reset</button>
+          </div>
+        </div>
+        <div id="kmeans-status" style="padding:9px;font-size:11.5px;color:var(--text2);text-align:center;font-family:var(--mono);"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PCA -->
+<div id="un-pca" class="section">
+  <div class="section-header">
+    <h2>🧬 Principal Component Analysis (PCA)</h2>
+    <p>Find the orthogonal axes of maximum variance in high-dimensional data. Project onto fewer dimensions while preserving as much structure as possible.</p>
+  </div>
+  <div class="algo-card purple">
+    <div class="two-col">
+      <div>
+        <div class="info-box" style="margin-bottom:14px;">
+          <h4>Intuition</h4>
+          <p>If you have 100 correlated features, most information lives in a few directions. PCA finds those directions (eigenvectors of the covariance matrix) and ranks them by how much variance they capture (eigenvalues).</p>
+        </div>
+        <div class="info-box" style="margin-bottom:14px;">
+          <h4>Step-by-step</h4>
+          <div class="steps">
+            <div class="step"><div class="step-num" style="border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.13);color:#a78bfa;">1</div><div class="step-content"><strong>Center the data</strong> — subtract mean from each feature</div></div>
+            <div class="step"><div class="step-num" style="border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.13);color:#a78bfa;">2</div><div class="step-content"><strong>Covariance matrix</strong> — C = XᵀX / (n−1)</div></div>
+            <div class="step"><div class="step-num" style="border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.13);color:#a78bfa;">3</div><div class="step-content"><strong>Eigendecomposition</strong> — C·v = λ·v</div></div>
+            <div class="step"><div class="step-num" style="border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.13);color:#a78bfa;">4</div><div class="step-content"><strong>Sort by eigenvalue</strong> — PC1 has largest λ (most variance)</div></div>
+            <div class="step"><div class="step-num" style="border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.13);color:#a78bfa;">5</div><div class="step-content"><strong>Project</strong> — X_reduced = X · [v₁, v₂, …, vₖ]</div></div>
+          </div>
+        </div>
+        <div class="info-box">
+          <h4>Explained Variance</h4>
+          <p style="margin-bottom:10px;">PC1 captures <span id="pc1-pct" style="color:#a78bfa;font-weight:600;">0%</span></p>
+          <div class="progress-bar"><div class="progress-fill" id="pc1-bar" style="background:#7c3aed;width:0%;"></div></div>
+          <p style="margin-top:10px;margin-bottom:10px;">PC2 captures <span id="pc2-pct" style="color:var(--blue);font-weight:600;">0%</span></p>
+          <div class="progress-bar"><div class="progress-fill" id="pc2-bar" style="background:#4f8ef7;width:0%;"></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="canvas-wrap" style="margin-bottom:14px;">
+          <canvas id="pca-canvas" height="300"></canvas>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-line" style="background:#7c3aed;height:3px;"></div>PC1 (max variance)</div>
+            <div class="legend-item"><div class="legend-line" style="background:#4f8ef7;"></div>PC2 (perpendicular)</div>
+          </div>
+          <div class="canvas-controls">
+            <div class="slider-group"><label>Correlation</label><input type="range" min="-95" max="95" value="70" id="pca-corr" oninput="updatePCA()"><span class="slider-val" id="pca-corr-v">0.70</span></div>
+            <button class="btn btn-secondary" onclick="updatePCA()">Regenerate</button>
+          </div>
+        </div>
+        <div class="info-box">
+          <h4>Real-world uses</h4>
+          <ul>
+            <li>Visualize 100-dim data in 2D/3D for exploration</li>
+            <li>Remove multicollinearity before regression</li>
+            <li>Compress image data (eigenfaces)</li>
+            <li>Noise reduction by dropping low-variance PCs</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DBSCAN -->
+<div id="un-dbscan" class="section">
+  <div class="section-header">
+    <h2>🌐 DBSCAN</h2>
+    <p>Density-Based Spatial Clustering of Applications with Noise — finds arbitrarily shaped clusters and identifies outliers as noise.</p>
+  </div>
+  <div class="algo-card teal">
+    <div class="two-col">
+      <div>
+        <div class="info-box" style="margin-bottom:14px;">
+          <h4>Core Concepts</h4>
+          <ul>
+            <li><strong style="color:#22d3ee">ε (epsilon)</strong> — neighborhood radius: how far to look for neighbors</li>
+            <li><strong style="color:#22d3ee">minPts</strong> — minimum points in ε-neighborhood to form a dense region</li>
+            <li><strong style="color:#fff">Core Point</strong> — has ≥ minPts neighbors within ε</li>
+            <li><strong style="color:#fff">Border Point</strong> — within ε of a core point, but not itself a core</li>
+            <li><strong style="color:#fff">Noise Point</strong> — neither core nor border → outlier</li>
+          </ul>
+        </div>
+        <div class="info-box" style="margin-bottom:14px;">
+          <h4>Algorithm</h4>
+          <div class="steps">
+            <div class="step"><div class="step-num" style="border-color:rgba(6,182,212,.3);background:rgba(6,182,212,.13);color:#22d3ee;">1</div><div class="step-content"><strong>For each unvisited point</strong> — find all ε-neighbors</div></div>
+            <div class="step"><div class="step-num" style="border-color:rgba(6,182,212,.3);background:rgba(6,182,212,.13);color:#22d3ee;">2</div><div class="step-content"><strong>If core point</strong> — start new cluster, expand recursively</div></div>
+            <div class="step"><div class="step-num" style="border-color:rgba(6,182,212,.3);background:rgba(6,182,212,.13);color:#22d3ee;">3</div><div class="step-content"><strong>Add reachable points</strong> — density-connected neighbors join cluster</div></div>
+            <div class="step"><div class="step-num" style="border-color:rgba(6,182,212,.3);background:rgba(6,182,212,.13);color:#22d3ee;">4</div><div class="step-content"><strong>Otherwise</strong> — mark as noise (can become border later)</div></div>
+          </div>
+        </div>
+        <div class="info-box">
+          <h4>vs K-Means</h4>
+          <ul>
+            <li>No need to specify K in advance</li>
+            <li>Handles arbitrary-shaped clusters</li>
+            <li>Robust to outliers (labels them as noise)</li>
+            <li>Struggles with varying density clusters</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="canvas-wrap">
+          <div class="canvas-hint">Adjust ε and minPts to see clustering change</div>
+          <canvas id="dbscan-canvas" height="300"></canvas>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#22d3ee;"></div>Core</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;"></div>Border</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#4a5a78;"></div>Noise</div>
+          </div>
+          <div class="canvas-controls">
+            <div class="slider-group"><label>ε radius</label><input type="range" min="5" max="60" value="28" id="dbscan-eps" oninput="runDBSCAN()"><span class="slider-val" id="dbscan-eps-v">28</span></div>
+            <div class="slider-group"><label>minPts</label><input type="range" min="2" max="10" value="4" id="dbscan-min" oninput="runDBSCAN()"><span class="slider-val" id="dbscan-min-v">4</span></div>
+            <button class="btn btn-secondary" onclick="resetDBSCAN()">New Data</button>
+          </div>
+        </div>
+        <div id="dbscan-stats" style="padding:9px;font-size:11.5px;color:var(--text2);text-align:center;font-family:var(--mono);"></div>
+      </div>
+    </div>
+  </div>
+  <div class="grid-3">
+    <div class="concept-card"><h4>✅ Pros</h4><p>No K needed, handles noise/outliers, finds non-convex shapes, one-pass algorithm possible.</p></div>
+    <div class="concept-card"><h4>❌ Cons</h4><p>Struggles with varying density. Sensitive to ε and minPts. High-dimensional data degrades distance metrics.</p></div>
+    <div class="concept-card"><h4>💡 Parameter Tuning</h4><p>Use k-distance graph: sort distances to k-th neighbor, pick ε at the "knee" of the curve. minPts ≥ log(n) is a common heuristic.</p></div>
+  </div>
+</div>
+
+<!-- HIERARCHICAL CLUSTERING -->
+<div id="un-hierarchical" class="section">
+  <div class="section-header">
+    <h2>🌲 Hierarchical Clustering</h2>
+    <p>Build a tree (dendrogram) of nested clusters by iteratively merging or splitting groups — no need to specify K in advance.</p>
+  </div>
+  <div class="algo-card pink">
+    <div class="two-col">
+      <div>
+        <div class="info-box" style="margin-bottom:14px;">
+          <h4>Agglomerative (Bottom-Up) — Most Common</h4>
+          <div class="steps">
+            <div class="step"><div class="step-num" style="border-color:rgba(236,72,153,.3);background:rgba(236,72,153,.13);color:var(--pink);">1</div><div class="step-content"><strong>Start</strong> — each point is its own cluster (n clusters)</div></div>
+            <div class="step"><div class="step-num" style="border-color:rgba(236,72,153,.3);background:rgba(236,72,153,.13);color:var(--pink);">2</div><div class="step-content"><strong>Find closest pair</strong> — compute pairwise distance matrix</div></div>
+            <div class="step"><div class="step-num" style="border-color:rgba(236,72,153,.3);background:rgba(236,72,153,.13);color:var(--pink);">3</div><div class="step-content"><strong>Merge</strong> — combine the two closest clusters into one</div></div>
+            <div class="step"><div class="step-num" style="border-color:rgba(236,72,153,.3);background:rgba(236,72,153,.13);color:var(--pink);">4</div><div class="step-content"><strong>Repeat</strong> until 1 cluster remains (full dendrogram)</div></div>
+          </div>
+        </div>
+        <div class="info-box" style="margin-bottom:14px;">
+          <h4>Linkage Criteria — How to measure cluster distance?</h4>
+          <ul>
+            <li><strong style="color:#fff">Single linkage</strong> — min dist between any two points (chaining effect)</li>
+            <li><strong style="color:#fff">Complete linkage</strong> — max dist (compact clusters)</li>
+            <li><strong style="color:#fff">Average linkage</strong> — mean dist (balanced)</li>
+            <li><strong style="color:#fff">Ward's method</strong> — minimize total WCSS increase (best for spherical)</li>
+          </ul>
+        </div>
+        <div class="info-box">
+          <h4>Cutting the Dendrogram</h4>
+          <p>Draw a horizontal line at height h. The number of branches crossed = number of clusters. Adjust the threshold below ↓</p>
+          <div class="slider-group" style="margin-top:10px;">
+            <label>Cut threshold</label>
+            <input type="range" min="10" max="90" value="50" id="hier-thresh" oninput="drawHierarchical()" style="width:120px;">
+            <span class="slider-val" id="hier-thresh-v">50</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="canvas-wrap" style="margin-bottom:14px;">
+          <div class="canvas-hint">Adjust threshold to choose K</div>
+          <canvas id="hier-canvas" height="320"></canvas>
+          <div class="canvas-controls">
+            <button class="btn btn-secondary" onclick="resetHierarchical()">New Data</button>
+            <div id="hier-stats" style="font-size:11.5px;color:var(--text2);font-family:var(--mono);margin-left:auto;"></div>
+          </div>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="hier-scatter" height="160"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="grid-3">
+    <div class="concept-card"><h4>✅ Pros</h4><p>No K needed upfront. Dendrogram shows all possible clusterings. Good for exploration and visualizing hierarchy.</p></div>
+    <div class="concept-card"><h4>❌ Cons</h4><p>O(n³) complexity — slow for large n. Cannot undo merges. Sensitive to noise and distance metric choice.</p></div>
+    <div class="concept-card"><h4>🆚 vs K-Means</h4><p>Hierarchical is deterministic (no random init), gives a full tree, but K-Means scales to millions of points while hierarchical struggles above ~10k.</p></div>
+  </div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /ui-layer -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ============================================================
+// THREE.JS REACTIVE BACKGROUND
+// ============================================================
+(function initThree() {
+  const canvas = document.getElementById('three-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.z = 28;
+
+  const N = 130;
+  const pos = new Float32Array(N * 3);
+  const vel = [];
+  const origPos = [];
+
+  for (let i = 0; i < N; i++) {
+    const x = (Math.random() - .5) * 55;
+    const y = (Math.random() - .5) * 38;
+    const z = (Math.random() - .5) * 8;
+    pos[i*3]=x; pos[i*3+1]=y; pos[i*3+2]=z;
+    origPos.push(x, y, z);
+    vel.push({ x: (Math.random()-.5)*.018, y: (Math.random()-.5)*.018, z: 0 });
+  }
+
+  const pGeom = new THREE.BufferGeometry();
+  const posAttr = new THREE.BufferAttribute(pos, 3);
+  pGeom.setAttribute('position', posAttr);
+
+  const pMat = new THREE.PointsMaterial({ size: .35, color: 0x4f8ef7, transparent: true, opacity: .55, sizeAttenuation: true });
+  const points = new THREE.Points(pGeom, pMat);
+  scene.add(points);
+
+  const MAX_LINES = 600;
+  const lPos = new Float32Array(MAX_LINES * 6);
+  const lGeom = new THREE.BufferGeometry();
+  const lAttr = new THREE.BufferAttribute(lPos, 3);
+  lGeom.setAttribute('position', lAttr);
+  lGeom.setDrawRange(0, 0);
+  const lMat = new THREE.LineBasicMaterial({ color: 0x4f8ef7, transparent: true, opacity: .09, vertexColors: false });
+  const lines = new THREE.LineSegments(lGeom, lMat);
+  scene.add(lines);
+
+  let mx = 0, my = 0, targetColor = { r: 0.31, g: 0.56, b: 0.97 };
+  let currentColor = { r: 0.31, g: 0.56, b: 0.97 };
+
+  document.addEventListener('mousemove', e => {
+    mx = (e.clientX / window.innerWidth - .5) * 55;
+    my = -(e.clientY / window.innerHeight - .5) * 38;
+  });
+
+  window.setThreeColor = function(green) {
+    if (green) { targetColor = { r: 0.063, g: 0.725, b: 0.506 }; }
+    else { targetColor = { r: 0.31, g: 0.56, b: 0.97 }; }
+  };
+
+  let hoverX = null, hoverY = null;
+  document.querySelectorAll('.algo-card').forEach(card => {
+    card.addEventListener('mouseenter', e => {
+      const r = card.getBoundingClientRect();
+      hoverX = ((r.left + r.width/2) / window.innerWidth - .5) * 55;
+      hoverY = -((r.top + r.height/2) / window.innerHeight - .5) * 38;
+      // track mouse inside card for glow effect
+      card.addEventListener('mousemove', function cardMove(ev) {
+        const cr = card.getBoundingClientRect();
+        const px = ((ev.clientX - cr.left) / cr.width * 100).toFixed(1) + '%';
+        const py = ((ev.clientY - cr.top) / cr.height * 100).toFixed(1) + '%';
+        card.style.setProperty('--mouse-x', px);
+        card.style.setProperty('--mouse-y', py);
+      });
+    });
+    card.addEventListener('mouseleave', () => { hoverX = null; hoverY = null; });
+  });
+
+  let frame = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    frame++;
+
+    // Lerp color
+    currentColor.r += (targetColor.r - currentColor.r) * .02;
+    currentColor.g += (targetColor.g - currentColor.g) * .02;
+    currentColor.b += (targetColor.b - currentColor.b) * .02;
+    const c = new THREE.Color(currentColor.r, currentColor.g, currentColor.b);
+    pMat.color = c;
+    lMat.color = c;
+
+    for (let i = 0; i < N; i++) {
+      const ix = i*3, iy = i*3+1;
+
+      // Mouse repulsion
+      const dx = pos[ix] - mx, dy = pos[iy] - my;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 9 && dist > 0) {
+        const f = ((9 - dist) / 9) * .055;
+        vel[i].x += (dx / dist) * f;
+        vel[i].y += (dy / dist) * f;
+      }
+
+      // Card hover attraction
+      if (hoverX !== null) {
+        const hx = pos[ix] - hoverX, hy = pos[iy] - hoverY;
+        const hd = Math.sqrt(hx*hx + hy*hy);
+        if (hd < 14 && hd > 2) {
+          const hf = .008;
+          vel[i].x -= (hx / hd) * hf;
+          vel[i].y -= (hy / hd) * hf;
+        }
+      }
+
+      // Gentle drift back toward original position
+      vel[i].x += (origPos[ix] - pos[ix]) * .00015;
+      vel[i].y += (origPos[iy] - pos[iy]) * .00015;
+
+      // Damping
+      vel[i].x *= .975;
+      vel[i].y *= .975;
+
+      pos[ix] += vel[i].x;
+      pos[iy] += vel[i].y;
+
+      // Boundary
+      if (Math.abs(pos[ix]) > 30) vel[i].x *= -.9;
+      if (Math.abs(pos[iy]) > 20) vel[i].y *= -.9;
+    }
+    posAttr.needsUpdate = true;
+
+    // Lines — only update every 2 frames for perf
+    if (frame % 2 === 0) {
+      let lc = 0;
+      for (let i = 0; i < N && lc < MAX_LINES; i++) {
+        for (let j = i+1; j < N && lc < MAX_LINES; j++) {
+          const dx = pos[i*3] - pos[j*3], dy = pos[i*3+1] - pos[j*3+1];
+          if (dx*dx + dy*dy < 110) {
+            lPos[lc*6]   = pos[i*3];   lPos[lc*6+1] = pos[i*3+1]; lPos[lc*6+2] = pos[i*3+2];
+            lPos[lc*6+3] = pos[j*3];   lPos[lc*6+4] = pos[j*3+1]; lPos[lc*6+5] = pos[j*3+2];
+            lc++;
+          }
+        }
+      }
+      lGeom.setDrawRange(0, lc * 2);
+      lAttr.needsUpdate = true;
+    }
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+})();
+
+// ============================================================
+// PAGE & NAV SWITCHING
+// ============================================================
+let currentPage = 'supervised';
+let activeSectionId = 'sup-overview';
+
+function switchPage(page) {
+  currentPage = page;
+  const isSup = page === 'supervised';
+
+  document.getElementById('nav-supervised').classList.toggle('visible', isSup);
+  document.getElementById('nav-unsupervised').classList.toggle('visible', !isSup);
+  document.getElementById('btn-sup').className = 'page-btn' + (isSup ? ' active-sup' : '');
+  document.getElementById('btn-unsup').className = 'page-btn' + (!isSup ? ' active-unsup' : '');
+  document.getElementById('hero-eyebrow').className = 'hero-eyebrow' + (!isSup ? ' green-mode' : '');
+  document.getElementById('hero-accent').className = 'accent' + (!isSup ? ' green-grad' : '');
+
+  // Three.js color
+  if (window.setThreeColor) window.setThreeColor(!isSup);
+
+  const firstSection = isSup ? 'sup-overview' : 'un-overview';
+  const firstTab = (isSup ? document.getElementById('nav-supervised') : document.getElementById('nav-unsupervised')).querySelectorAll('.nav-tab')[0];
+  showSection(firstSection, firstTab);
+}
+
+function showSection(id, tabEl) {
+  // Hide all
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  // Show target
+  const sec = document.getElementById(id);
+  if (sec) sec.classList.add('active');
+  activeSectionId = id;
+
+  // Update nav tabs in current page
+  const navId = currentPage === 'supervised' ? 'nav-supervised' : 'nav-unsupervised';
+  document.getElementById(navId).querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  if (tabEl) tabEl.classList.add('active');
+
+  // Init section
+  setTimeout(() => initSection(id), 60);
+}
+
+function initSection(id) {
+  const map = {
+    'sup-linear-simple': () => { initSLR(); },
+    'sup-linear-multi': () => { initMLR(); },
+    'sup-logistic': () => { initLogistic(); drawSigmoid(); },
+    'sup-knn': () => { initKNN(); },
+    'sup-dtree': () => { drawDecisionTree(); initGini(); },
+    'un-kmeans': () => { initKMeans(); drawElbow(); },
+    'un-pca': () => { updatePCA(); },
+    'un-dbscan': () => { resetDBSCAN(); },
+    'un-hierarchical': () => { resetHierarchical(); },
+  };
+  if (map[id]) map[id]();
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function getDPR() { return Math.min(window.devicePixelRatio || 1, 2); }
+
+function setupCanvas(id, h) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return null;
+  const dpr = getDPR();
+  const W = canvas.offsetWidth || 400;
+  canvas.width = W * dpr;
+  canvas.height = h * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, W, H: h, dpr };
+}
+
+function drawGrid(ctx, W, H, pad) {
+  ctx.strokeStyle = 'rgba(26,37,64,0.9)'; ctx.lineWidth = .8;
+  for (let i = 0; i <= 5; i++) {
+    ctx.beginPath(); ctx.moveTo(pad.l + (i/5)*(W-pad.l-pad.r), pad.t); ctx.lineTo(pad.l + (i/5)*(W-pad.l-pad.r), H-pad.b); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.l, pad.t + (i/5)*(H-pad.t-pad.b)); ctx.lineTo(W-pad.r, pad.t + (i/5)*(H-pad.t-pad.b)); ctx.stroke();
+  }
+}
+
+// ============================================================
+// SIMPLE LINEAR REGRESSION
+// ============================================================
+let slrPts = [];
+
+function initSLR() {
+  const canvas = document.getElementById('slr-canvas');
+  if (!canvas) return;
+  canvas._slrInit = canvas._slrInit || (() => {
+    canvas.addEventListener('click', e => {
+      const r = canvas.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width;
+      const py = 1 - (e.clientY - r.top) / r.height;
+      if (px >= 0 && px <= 1 && py >= 0 && py <= 1) { slrPts.push({x:px,y:py}); drawSLR(); }
+    });
+    return true;
+  })();
+  if (slrPts.length === 0) generateSLR(); else drawSLR();
+}
+
+function generateSLR() {
+  slrPts = [];
+  const m = .3 + Math.random()*.6, b = .05 + Math.random()*.25;
+  for (let i = 0; i < 20; i++) {
+    const x = .05 + Math.random()*.9;
+    slrPts.push({x, y: Math.max(0,Math.min(1, m*x+b+(Math.random()-.5)*.2))});
+  }
+  drawSLR();
+}
+
+function clearSLR() { slrPts=[]; drawSLR(); }
+
+function regress(pts) {
+  if (pts.length < 2) return null;
+  const n=pts.length, mx=pts.reduce((s,p)=>s+p.x,0)/n, my=pts.reduce((s,p)=>s+p.y,0)/n;
+  const num=pts.reduce((s,p)=>s+(p.x-mx)*(p.y-my),0), den=pts.reduce((s,p)=>s+(p.x-mx)**2,0);
+  if (!den) return null;
+  const b1=num/den, b0=my-b1*mx;
+  const yh=pts.map(p=>b0+b1*p.x);
+  const ssr=pts.reduce((s,p,i)=>s+(p.y-yh[i])**2,0);
+  const sst=pts.reduce((s,p)=>s+(p.y-my)**2,0);
+  return {b0,b1,r2:sst?1-ssr/sst:0,mse:ssr/n};
+}
+
+function drawSLR() {
+  const s = setupCanvas('slr-canvas', 300); if (!s) return;
+  const {ctx,W,H} = s;
+  const pad={l:40,r:16,t:16,b:28};
+  const w=W-pad.l-pad.r, h=H-pad.t-pad.b;
+  const cx=(px,py)=>({x:pad.l+px*w, y:pad.t+(1-py)*h});
+
+  ctx.clearRect(0,0,W,H);
+  drawGrid(ctx,W,H,pad);
+
+  const reg=regress(slrPts);
+
+  if (reg && slrPts.length>1) {
+    // Residuals
+    slrPts.forEach(p=>{
+      const a=cx(p.x,p.y), b=cx(p.x,reg.b0+reg.b1*p.x);
+      ctx.strokeStyle='rgba(239,68,68,.45)'; ctx.lineWidth=1.3;
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+    });
+    // Line
+    const p1=cx(0,reg.b0), p2=cx(1,reg.b0+reg.b1);
+    ctx.strokeStyle='#f59e0b'; ctx.lineWidth=2.2;
+    ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+  }
+
+  // Points
+  slrPts.forEach(p=>{
+    const c=cx(p.x,p.y);
+    ctx.fillStyle='#4f8ef7';
+    ctx.beginPath(); ctx.arc(c.x,c.y,4.5,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='rgba(79,142,247,.3)'; ctx.lineWidth=4;
+    ctx.beginPath(); ctx.arc(c.x,c.y,4.5,0,Math.PI*2); ctx.stroke();
+  });
+
+  if (reg && slrPts.length>=2) {
+    document.getElementById('slr-metrics').style.display='grid';
+    document.getElementById('slr-r2').textContent=reg.r2.toFixed(3);
+    document.getElementById('slr-mse').textContent=reg.mse.toFixed(4);
+    document.getElementById('slr-slope').textContent=reg.b1.toFixed(3);
+    document.getElementById('slr-b0').textContent=reg.b0.toFixed(3);
+    document.getElementById('slr-eq').textContent=`ŷ = ${reg.b0.toFixed(2)} + ${reg.b1.toFixed(2)}·X`;
+  } else {
+    document.getElementById('slr-metrics').style.display='none';
+    document.getElementById('slr-eq').textContent='';
+  }
+}
+
+// ============================================================
+// MULTIPLE LINEAR REGRESSION
+// ============================================================
+function initMLR() {
+  const feats=[{n:'Size (m²)',c:3500,col:'#4f8ef7'},{n:'Bedrooms',c:15000,col:'#a78bfa'},{n:'Age (yrs)',c:-1200,col:'#ef4444'},{n:'Distance',c:-2000,col:'#f59e0b'}];
+  const max=Math.max(...feats.map(f=>Math.abs(f.c)));
+  const el=document.getElementById('mlr-bars'); if(!el) return;
+  el.innerHTML=feats.map(f=>`
+    <div style="margin-bottom:9px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:3px;">
+        <span>${f.n}</span><span style="font-family:var(--mono);color:${f.col};">${f.c>0?'+':''}${f.c.toLocaleString()}</span>
+      </div>
+      <div style="height:6px;background:var(--bg);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${(Math.abs(f.c)/max)*100}%;background:${f.col};border-radius:3px;"></div>
+      </div>
+    </div>`).join('');
+  updateMLR();
+}
+
+function updateMLR() {
+  const s=+document.getElementById('mlr-size').value;
+  const b=+document.getElementById('mlr-beds').value;
+  const a=+document.getElementById('mlr-age').value;
+  const d=+document.getElementById('mlr-dist').value;
+  document.getElementById('mlr-size-v').textContent=s;
+  document.getElementById('mlr-beds-v').textContent=b;
+  document.getElementById('mlr-age-v').textContent=a;
+  document.getElementById('mlr-dist-v').textContent=d;
+  const price=Math.max(0,Math.round(50000+3500*s+15000*b-1200*a-2000*d));
+  document.getElementById('mlr-price').textContent='$'+price.toLocaleString();
+}
+
+// ============================================================
+// LOGISTIC REGRESSION
+// ============================================================
+let logPts=[];
+
+function initLogistic() {
+  const canvas=document.getElementById('logistic-canvas'); if(!canvas) return;
+  canvas._li=canvas._li||(() => {
+    canvas.addEventListener('click',e=>{
+      const r=canvas.getBoundingClientRect();
+      const x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
+      logPts.push({x,y,cls:x<.5?0:1}); drawLogistic();
+    });
+    return true;
+  })();
+  if(logPts.length===0) generateLogistic(); else drawLogistic();
+}
+
+function generateLogistic() {
+  logPts=[];
+  for(let i=0;i<32;i++){
+    const cls=Math.random()<.5?0:1;
+    logPts.push({x:cls===0?.05+Math.random()*.42:.53+Math.random()*.42,y:.08+Math.random()*.84,cls});
+  }
+  drawLogistic();
+}
+function clearLogistic(){logPts=[];drawLogistic();}
+
+function drawLogistic() {
+  const s=setupCanvas('logistic-canvas',280); if(!s) return;
+  const {ctx,W,H}=s;
+  ctx.clearRect(0,0,W,H);
+
+  // BG halves
+  ctx.fillStyle='rgba(79,142,247,.05)'; ctx.fillRect(0,0,W/2,H);
+  ctx.fillStyle='rgba(239,68,68,.05)'; ctx.fillRect(W/2,0,W/2,H);
+
+  // Boundary
+  ctx.strokeStyle='rgba(245,158,11,.7)'; ctx.lineWidth=2; ctx.setLineDash([7,4]);
+  ctx.beginPath(); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.stroke(); ctx.setLineDash([]);
+
+  // Labels
+  ctx.fillStyle='rgba(79,142,247,.35)'; ctx.font='11px Space Grotesk'; ctx.fillText('Class A',8,18);
+  ctx.fillStyle='rgba(239,68,68,.35)'; ctx.textAlign='right'; ctx.fillText('Class B',W-6,18); ctx.textAlign='left';
+
+  logPts.forEach(p=>{
+    const cx=p.x*W, cy=p.y*H;
+    ctx.fillStyle=p.cls===0?'#4f8ef7':'#ef4444';
+    ctx.beginPath(); ctx.arc(cx,cy,5.5,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle=p.cls===0?'rgba(79,142,247,.3)':'rgba(239,68,68,.3)'; ctx.lineWidth=4;
+    ctx.beginPath(); ctx.arc(cx,cy,5.5,0,Math.PI*2); ctx.stroke();
+  });
+}
+
+function drawSigmoid() {
+  const s=setupCanvas('sigmoid-canvas',160); if(!s) return;
+  const {ctx,W,H}=s;
+  const k=+document.getElementById('sig-k').value;
+  const x0=+document.getElementById('sig-x0').value;
+  document.getElementById('sig-k-v').textContent=k;
+  document.getElementById('sig-x0-v').textContent=x0;
+  const pad={l:32,r:8,t:10,b:22};
+  const w=W-pad.l-pad.r, h=H-pad.t-pad.b;
+
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(26,37,64,.8)'; ctx.lineWidth=.8;
+  [0,.25,.5,.75,1].forEach(v=>{
+    const y=pad.t+(1-v)*h;
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+w,y); ctx.stroke();
+    ctx.fillStyle='#4a5a78'; ctx.font='9px JetBrains Mono';
+    ctx.fillText(v.toFixed(2),2,y+3);
+  });
+
+  // 0.5 threshold line
+  ctx.strokeStyle='rgba(245,158,11,.35)'; ctx.setLineDash([5,3]);
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t+.5*h); ctx.lineTo(pad.l+w,pad.t+.5*h); ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.strokeStyle='#4f8ef7'; ctx.lineWidth=2.2;
+  ctx.beginPath();
+  for(let i=0;i<=w;i++){
+    const xv=-8+(i/w)*16;
+    const yv=1/(1+Math.exp(-k*(xv-x0)));
+    const cy=pad.t+(1-yv)*h;
+    i===0?ctx.moveTo(pad.l+i,cy):ctx.lineTo(pad.l+i,cy);
+  }
+  ctx.stroke();
+}
+
+// ============================================================
+// KNN
+// ============================================================
+let knnData=[], knnQuery=null;
+
+function initKNN(){
+  knnData=[];
+  for(let i=0;i<32;i++) knnData.push({x:Math.random(),y:Math.random(),cls:Math.random()<.5?0:1});
+  const canvas=document.getElementById('knn-canvas'); if(!canvas) return;
+  canvas._ki=canvas._ki||(() => {
+    canvas.addEventListener('click',e=>{
+      const r=canvas.getBoundingClientRect();
+      knnQuery={x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height};
+      drawKNN();
+    });
+    return true;
+  })();
+  drawKNN();
+}
+function resetKNN(){ knnQuery=null; initKNN(); }
+function updateKNN(){ document.getElementById('knn-k-v').textContent=document.getElementById('knn-k').value; if(knnQuery) drawKNN(); }
+
+function drawKNN(){
+  const s=setupCanvas('knn-canvas',300); if(!s) return;
+  const {ctx,W,H}=s;
+  const K=+document.getElementById('knn-k').value;
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(26,37,64,.8)'; ctx.lineWidth=.6;
+  for(let i=0;i<=4;i++){
+    ctx.beginPath();ctx.moveTo(i/4*W,0);ctx.lineTo(i/4*W,H);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,i/4*H);ctx.lineTo(W,i/4*H);ctx.stroke();
+  }
+
+  let nbrs=[], pred=-1;
+  if(knnQuery){
+    const dists=knnData.map((p,i)=>({i,d:(p.x-knnQuery.x)**2+(p.y-knnQuery.y)**2})).sort((a,b)=>a.d-b.d);
+    nbrs=dists.slice(0,K).map(d=>d.i);
+    const v=[0,0]; nbrs.forEach(i=>v[knnData[i].cls]++);
+    pred=v[0]>=v[1]?0:1;
+    const r=Math.sqrt(dists[K-1].d)*Math.sqrt(W*W+H*H)*.5;
+    ctx.strokeStyle='rgba(245,158,11,.2)'; ctx.setLineDash([4,3]); ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.arc(knnQuery.x*W,knnQuery.y*H,r,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+    nbrs.forEach(i=>{
+      ctx.strokeStyle='rgba(245,158,11,.4)'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(knnQuery.x*W,knnQuery.y*H); ctx.lineTo(knnData[i].x*W,knnData[i].y*H); ctx.stroke();
+    });
+  }
+
+  knnData.forEach((p,i)=>{
+    const isN=nbrs.includes(i);
+    ctx.fillStyle=p.cls===0?'#4f8ef7':'#ef4444';
+    ctx.beginPath(); ctx.arc(p.x*W,p.y*H,isN?7:4.5,0,Math.PI*2); ctx.fill();
+    if(isN){ ctx.strokeStyle='#fff'; ctx.lineWidth=1.8; ctx.stroke(); }
+  });
+
+  if(knnQuery){
+    const cx=knnQuery.x*W, cy=knnQuery.y*H;
+    ctx.fillStyle=pred===0?'rgba(79,142,247,.2)':'rgba(239,68,68,.2)';
+    ctx.beginPath(); ctx.arc(cx,cy,16,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#f59e0b';
+    ctx.beginPath(); ctx.arc(cx,cy,6.5,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1.8; ctx.stroke();
+    const v=[0,0]; nbrs.forEach(i=>v[knnData[i].cls]++);
+    document.getElementById('knn-result').innerHTML=`K=${K} → <span style="color:#4f8ef7">${v[0]} Blue</span> vs <span style="color:#ef4444">${v[1]} Red</span> → <strong style="color:${pred===0?'#4f8ef7':'#ef4444'}">Predicted: ${pred===0?'Blue':'Red'}</strong>`;
+  } else {
+    document.getElementById('knn-result').innerHTML='<span style="color:var(--text3)">Click canvas to classify a point</span>';
+  }
+}
+
+// ============================================================
+// DECISION TREE
+// ============================================================
+function drawDecisionTree(){
+  const s=setupCanvas('tree-canvas',360); if(!s) return;
+  const {ctx,W,H,dpr}=s;
+  ctx.clearRect(0,0,W,H);
+  const nodes=[
+    {x:.5,y:.08,t:'Age < 30?',c:'#4f8ef7',leaf:false},
+    {x:.25,y:.29,t:'Income > 50k?',c:'#7c3aed',leaf:false},
+    {x:.75,y:.29,t:'Credit > 700?',c:'#7c3aed',leaf:false},
+    {x:.1,y:.52,t:'✓ Approve',c:'#10b981',leaf:true},
+    {x:.38,y:.52,t:'✗ Reject',c:'#ef4444',leaf:true},
+    {x:.63,y:.52,t:'Employed?',c:'#7c3aed',leaf:false},
+    {x:.9,y:.52,t:'✓ Approve',c:'#10b981',leaf:true},
+    {x:.5,y:.74,t:'✓ Approve',c:'#10b981',leaf:true},
+    {x:.76,y:.74,t:'✗ Reject',c:'#ef4444',leaf:true},
+  ];
+  const edges=[[0,1,'Yes'],[0,2,'No'],[1,3,'Yes'],[1,4,'No'],[2,5,'Yes'],[2,6,'No'],[5,7,'Yes'],[5,8,'No']];
+
+  edges.forEach(([f,t,l])=>{
+    const a=nodes[f], b=nodes[t];
+    const ax=a.x*W, ay=a.y*H+12, bx=b.x*W, by=b.y*H-12;
+    ctx.strokeStyle='rgba(26,37,64,.9)'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
+    ctx.fillStyle='#4a5a78'; ctx.font='10px Space Grotesk';
+    ctx.fillText(l,(ax+bx)/2+3,(ay+by)/2);
+  });
+
+  nodes.forEach(n=>{
+    const cx=n.x*W, cy=n.y*H;
+    const rw=n.leaf?38:54, rh=13;
+    ctx.fillStyle=n.c+'22'; ctx.strokeStyle=n.c; ctx.lineWidth=1.4;
+function roundRect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r); ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h); ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r); ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath(); } roundRect(ctx, cx-rw, cy-rh, rw*2, rh*2, n.leaf ? rh : 6); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.font='9.5px Space Grotesk'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(n.t,cx,cy);
+  });
+  ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+}
+
+function initGini(){ updateGini(); }
+
+function updateGini(){
+  const a=+document.getElementById('gini-a').value/100, b=1-a;
+  document.getElementById('gini-a-v').textContent=Math.round(a*100)+'%';
+  document.getElementById('gini-b-v').textContent=Math.round(b*100)+'%';
+  const g=1-a*a-b*b;
+  document.getElementById('gini-val').textContent=g.toFixed(4);
+  document.getElementById('gini-lbl').textContent=g<.1?'Very pure node':g<.3?'Fairly pure':g<.45?'Mixed':'Maximum disorder';
+
+  const s=setupCanvas('gini-canvas',110); if(!s) return;
+  const {ctx,W,H}=s;
+  ctx.clearRect(0,0,W,H);
+  const mx=Math.max(a,b,.01), bw=W*.3, bh=H*.55, bx=W*.1, by=H*.2;
+  const hA=bh*(a/mx), hB=bh*(b/mx);
+  ctx.fillStyle='#4f8ef7'; ctx.fillRect(bx,by+bh-hA,bw,hA);
+  ctx.fillStyle='#ef4444'; ctx.fillRect(bx+bw+W*.18,by+bh-hB,bw,hB);
+  ctx.fillStyle='#4a5a78'; ctx.font='9px Space Grotesk'; ctx.textAlign='center';
+  ctx.fillText('A',bx+bw/2,by+bh+13); ctx.fillText('B',bx+bw+W*.18+bw/2,by+bh+13);
+  ctx.textAlign='left';
+}
+
+// ============================================================
+// K-MEANS
+// ============================================================
+let kmeansData=[], kmeansCentroids=[], kmeansAssign=[], kmeansRunning=false;
+const COLORS=['#4f8ef7','#ef4444','#10b981','#f59e0b','#a78bfa','#f43f5e'];
+
+function initKMeans(){
+  kmeansData=[];
+  for(let c=0;c<3;c++){
+    const cx=.15+Math.random()*.7, cy=.15+Math.random()*.7;
+    for(let i=0;i<22;i++) kmeansData.push({x:Math.min(.98,Math.max(.02,cx+(Math.random()-.5)*.22)),y:Math.min(.98,Math.max(.02,cy+(Math.random()-.5)*.22))});
+  }
+  kmeansAssign=new Array(kmeansData.length).fill(-1);
+  kmeansCentroids=[];
+  document.getElementById('kmeans-status').textContent='Press ▶ Run to start';
+  drawKMeans();
+}
+function resetKMeans(){ kmeansRunning=false; initKMeans(); drawElbow(); }
+
+async function runKMeans(){
+  if(kmeansRunning) return;
+  kmeansRunning=true;
+  const K=+document.getElementById('kmeans-k').value;
+  const idxs=[]; while(idxs.length<K){const i=Math.floor(Math.random()*kmeansData.length);if(!idxs.includes(i))idxs.push(i);}
+  kmeansCentroids=idxs.map(i=>({x:kmeansData[i].x,y:kmeansData[i].y}));
+  kmeansAssign=new Array(kmeansData.length).fill(-1);
+
+  for(let iter=0;iter<20&&kmeansRunning;iter++){
+    let changed=false;
+    kmeansData.forEach((p,i)=>{
+      let best=-1,bestD=Infinity;
+      kmeansCentroids.forEach((c,k)=>{const d=(p.x-c.x)**2+(p.y-c.y)**2;if(d<bestD){bestD=d;best=k;}});
+      if(kmeansAssign[i]!==best){kmeansAssign[i]=best;changed=true;}
+    });
+    document.getElementById('kmeans-status').textContent=`Iteration ${iter+1} — assigning points…`;
+    drawKMeans(); await sleep(380);
+
+    kmeansCentroids=kmeansCentroids.map((_,k)=>{
+      const pts=kmeansData.filter((_,i)=>kmeansAssign[i]===k);
+      if(!pts.length) return kmeansCentroids[k];
+      return{x:pts.reduce((s,p)=>s+p.x,0)/pts.length,y:pts.reduce((s,p)=>s+p.y,0)/pts.length};
+    });
+    document.getElementById('kmeans-status').textContent=`Iteration ${iter+1} — updating centroids…`;
+    drawKMeans(); await sleep(380);
+
+    if(!changed){document.getElementById('kmeans-status').textContent=`✓ Converged after ${iter+1} iteration(s)`;break;}
+  }
+  kmeansRunning=false;
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+function drawKMeans(){
+  const s=setupCanvas('kmeans-canvas',300); if(!s) return;
+  const {ctx,W,H}=s;
+  ctx.clearRect(0,0,W,H);
+
+  kmeansData.forEach((p,i)=>{
+    const cls=kmeansAssign[i];
+    ctx.fillStyle=cls>=0?COLORS[cls]+'cc':'#4a5a78';
+    ctx.beginPath(); ctx.arc(p.x*W,p.y*H,4.5,0,Math.PI*2); ctx.fill();
+  });
+
+  kmeansCentroids.forEach((c,k)=>{
+    const cx=c.x*W,cy=c.y*H;
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(cx,cy,11,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=COLORS[k]; ctx.beginPath(); ctx.arc(cx,cy,8,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(cx-4,cy-4); ctx.lineTo(cx+4,cy+4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx+4,cy-4); ctx.lineTo(cx-4,cy+4); ctx.stroke();
+  });
+
+  const K=kmeansCentroids.length||+document.getElementById('kmeans-k').value;
+  const legend=document.getElementById('kmeans-legend');
+  if(legend) legend.innerHTML=Array.from({length:Math.min(K,6)},(_,k)=>`<div class="legend-item"><div class="legend-dot" style="background:${COLORS[k]};"></div>Cluster ${k+1}</div>`).join('');
+}
+
+function drawElbow(){
+  const s=setupCanvas('elbow-canvas',110); if(!s) return;
+  const {ctx,W,H}=s;
+  ctx.clearRect(0,0,W,H);
+  const pad={l:24,r:8,t:8,b:20};
+  const w=W-pad.l-pad.r, h=H-pad.t-pad.b;
+  const wcss=[1,.56,.31,.22,.17,.14];
+  ctx.strokeStyle='rgba(26,37,64,.8)'; ctx.lineWidth=.8;
+  [0,.5,1].forEach(v=>{const y=pad.t+(1-v)*h;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+w,y);ctx.stroke();});
+  ctx.strokeStyle='#10b981'; ctx.lineWidth=2;
+  ctx.beginPath();
+  wcss.forEach((v,i)=>{const x=pad.l+(i/(wcss.length-1))*w,y=pad.t+(1-v)*h;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.stroke();
+  const ex=pad.l+(2/(wcss.length-1))*w, ey=pad.t+(1-wcss[2])*h;
+  ctx.fillStyle='#f59e0b'; ctx.beginPath(); ctx.arc(ex,ey,5,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#4a5a78'; ctx.font='9px JetBrains Mono'; ctx.textAlign='center';
+  wcss.forEach((_,i)=>{ctx.fillText('K='+(i+1),pad.l+(i/(wcss.length-1))*w,pad.t+h+13);});
+  ctx.fillStyle='#f59e0b'; ctx.font='8px Space Grotesk';
+  ctx.fillText('← elbow',ex+12,ey+3); ctx.textAlign='left';
+}
+
+// ============================================================
+// PCA
+// ============================================================
+function updatePCA(){
+  const corr=+document.getElementById('pca-corr').value/100;
+  document.getElementById('pca-corr-v').textContent=corr.toFixed(2);
+  const s=setupCanvas('pca-canvas',300); if(!s) return;
+  const {ctx,W,H}=s;
+  ctx.clearRect(0,0,W,H);
+  const cx=W/2, cy=H/2;
+
+  const pts=[];
+  for(let i=0;i<90;i++){
+    const x=(Math.random()-.5)*2;
+    const y=corr*x+Math.sqrt(1-corr*corr)*(Math.random()-.5)*2;
+    pts.push({x:x*W*.22+cx,y:y*H*.22+cy});
+  }
+
+  // Point cloud
+  ctx.fillStyle='rgba(124,58,237,.55)';
+  pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3.5,0,Math.PI*2);ctx.fill();});
+
+  // PC1
+  const angle=Math.atan2(corr,1);
+  const len=Math.min(W,H)*.36;
+  ctx.strokeStyle='#7c3aed'; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.moveTo(cx-Math.cos(angle)*len,cy-Math.sin(angle)*len); ctx.lineTo(cx+Math.cos(angle)*len,cy+Math.sin(angle)*len); ctx.stroke();
+  // Arrow
+  ctx.fillStyle='#7c3aed';
+  ctx.beginPath(); ctx.arc(cx+Math.cos(angle)*len,cy+Math.sin(angle)*len,5,0,Math.PI*2); ctx.fill();
+
+  // PC2
+  const a2=angle+Math.PI/2, v2=Math.max(.05,1-Math.abs(corr));
+  const len2=len*v2;
+  ctx.strokeStyle='#4f8ef7'; ctx.lineWidth=1.8;
+  ctx.beginPath(); ctx.moveTo(cx-Math.cos(a2)*len2,cy-Math.sin(a2)*len2); ctx.lineTo(cx+Math.cos(a2)*len2,cy+Math.sin(a2)*len2); ctx.stroke();
+  ctx.fillStyle='#4f8ef7';
+  ctx.beginPath(); ctx.arc(cx+Math.cos(a2)*len2,cy+Math.sin(a2)*len2,4,0,Math.PI*2); ctx.fill();
+
+  // Labels
+  ctx.fillStyle='#a78bfa'; ctx.font='11px Space Grotesk';
+  ctx.fillText('PC1',cx+Math.cos(angle)*len+7,cy+Math.sin(angle)*len+4);
+  ctx.fillStyle='#4f8ef7';
+  ctx.fillText('PC2',cx+Math.cos(a2)*len2+6,cy+Math.sin(a2)*len2+4);
+
+  const v1=Math.round((50+Math.abs(corr)*45));
+  const v2p=100-v1;
+  document.getElementById('pc1-pct').textContent=v1+'%';
+  document.getElementById('pc2-pct').textContent=v2p+'%';
+  document.getElementById('pc1-bar').style.width=v1+'%';
+  document.getElementById('pc2-bar').style.width=v2p+'%';
+}
+
+// ============================================================
+// DBSCAN
+// ============================================================
+let dbscanData=[];
+
+function resetDBSCAN(){
+  dbscanData=[];
+  // Two crescent shapes + scattered noise
+  const N=90;
+  // cluster 1 - arc
+  for(let i=0;i<30;i++){const a=Math.PI+Math.random()*Math.PI,r=.18+Math.random()*.04;dbscanData.push({x:.3+r*Math.cos(a),y:.5+r*Math.sin(a)});}
+  // cluster 2 - arc
+  for(let i=0;i<30;i++){const a=Math.random()*Math.PI,r=.18+Math.random()*.04;dbscanData.push({x:.7+r*Math.cos(a),y:.5+r*Math.sin(a)});}
+  // cluster 3 - blob
+  for(let i=0;i<20;i++) dbscanData.push({x:.5+(Math.random()-.5)*.15,y:.2+(Math.random()-.5)*.1});
+  // noise
+  for(let i=0;i<10;i++) dbscanData.push({x:.05+Math.random()*.9,y:.05+Math.random()*.9});
+  runDBSCAN();
+}
+
+function runDBSCAN(){
+  const epsSlider=document.getElementById('dbscan-eps');
+  const minSlider=document.getElementById('dbscan-min');
+  if(!epsSlider||!dbscanData.length) return;
+  const eps=+epsSlider.value;
+  const minPts=+minSlider.value;
+  document.getElementById('dbscan-eps-v').textContent=eps;
+  document.getElementById('dbscan-min-v').textContent=minPts;
+
+  const s=setupCanvas('dbscan-canvas',300); if(!s) return;
+  const {ctx,W,H}=s;
+  const epsN=eps/W; // normalized
+
+  // Run DBSCAN
+  const n=dbscanData.length;
+  const labels=new Array(n).fill(-1); // -1=unvisited, -2=noise
+  const pointType=new Array(n).fill('noise');
+  let clusterId=0;
+
+  function neighbors(i){
+    return dbscanData.reduce((acc,p,j)=>{
+      const dx=dbscanData[i].x-p.x, dy=dbscanData[i].y-p.y;
+      if(Math.sqrt(dx*dx+dy*dy)<=epsN) acc.push(j);
+      return acc;
+    },[]);
+  }
+
+  for(let i=0;i<n;i++){
+    if(labels[i]!==-1) continue;
+    const nbrs=neighbors(i);
+    if(nbrs.length<minPts){ labels[i]=-2; continue; }
+    labels[i]=clusterId;
+    pointType[i]='core';
+    const queue=[...nbrs.filter(j=>j!==i)];
+    while(queue.length){
+      const j=queue.shift();
+      if(labels[j]===-2) labels[j]=clusterId;
+      if(labels[j]!==-1) continue;
+      labels[j]=clusterId;
+      const jn=neighbors(j);
+      if(jn.length>=minPts){ pointType[j]='core'; queue.push(...jn.filter(k=>labels[k]===-1||labels[k]===-2)); }
+      else pointType[j]='border';
+    }
+    clusterId++;
+  }
+
+  ctx.clearRect(0,0,W,H);
+  // ε circles for a few core points (visual aid)
+  dbscanData.forEach((p,i)=>{
+    if(pointType[i]==='core' && Math.random()<.08){
+      ctx.strokeStyle='rgba(6,182,212,.08)'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.arc(p.x*W,p.y*H,epsN*W,0,Math.PI*2); ctx.stroke();
+    }
+  });
+
+  dbscanData.forEach((p,i)=>{
+    const cl=labels[i];
+    const col=cl>=0?COLORS[cl%COLORS.length]:null;
+    const type=pointType[i];
+    if(type==='noise'){ ctx.fillStyle='#4a5a78'; ctx.beginPath(); ctx.arc(p.x*W,p.y*H,3,0,Math.PI*2); ctx.fill(); return; }
+    ctx.fillStyle=col+(type==='border'?'88':'cc');
+    ctx.beginPath(); ctx.arc(p.x*W,p.y*H,type==='core'?5.5:4,0,Math.PI*2); ctx.fill();
+    if(type==='core'){ ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(p.x*W,p.y*H,5.5,0,Math.PI*2); ctx.stroke(); }
+  });
+
+  const nClusters=clusterId;
+  const nNoise=labels.filter(l=>l===-2).length;
+  const nCore=pointType.filter(t=>t==='core').length;
+  document.getElementById('dbscan-stats').textContent=`Clusters: ${nClusters}  |  Core: ${nCore}  |  Border: ${pointType.filter(t=>t==='border').length}  |  Noise: ${nNoise}`;
+}
+
+// ============================================================
+// HIERARCHICAL CLUSTERING
+// ============================================================
+let hierData=[], hierMerges=[];
+
+function resetHierarchical(){
+  hierData=[];
+  const groups=[[.2,.3],[.75,.25],[.5,.75],[.25,.7]];
+  groups.forEach(([cx,cy])=>{
+    for(let i=0;i<8;i++) hierData.push({x:cx+(Math.random()-.5)*.18,y:cy+(Math.random()-.5)*.18});
+  });
+  buildDendrogram();
+  drawHierarchical();
+}
+
+function buildDendrogram(){
+  // Simple agglomerative with single linkage
+  const n=hierData.length;
+  const clusters=hierData.map((_,i)=>[i]);
+  hierMerges=[];
+  let dists=[];
+
+  function clusterDist(a,b){
+    let minD=Infinity;
+    a.forEach(i=>b.forEach(j=>{
+      const dx=hierData[i].x-hierData[j].x, dy=hierData[i].y-hierData[j].y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<minD) minD=d;
+    }));
+    return minD;
+  }
+
+  const working=[...clusters.map((c,i)=>({id:i,members:[...c],height:0}))];
+  let nextId=n;
+  while(working.length>1){
+    let bestI=-1,bestJ=-1,bestD=Infinity;
+    for(let i=0;i<working.length;i++){
+      for(let j=i+1;j<working.length;j++){
+        const d=clusterDist(working[i].members,working[j].members);
+        if(d<bestD){bestD=d;bestI=i;bestJ=j;}
+      }
+    }
+    const merged={id:nextId++,members:[...working[bestI].members,...working[bestJ].members],height:bestD,left:working[bestI],right:working[bestJ]};
+    hierMerges.push({id:merged.id,height:bestD,left:working[bestI].id,right:working[bestJ].id,members:merged.members});
+    working.splice(bestJ,1); working.splice(bestI,1); working.push(merged);
+  }
+  hierMerges._root=working[0];
+}
+
+function drawHierarchical(){
+  const thresh=+document.getElementById('hier-thresh').value/100;
+  document.getElementById('hier-thresh-v').textContent=(thresh*100).toFixed(0);
+
+  const s=setupCanvas('hier-canvas',320); if(!s) return;
+  const {ctx,W,H}=s;
+  ctx.clearRect(0,0,W,H);
+  const pad={l:20,r:16,t:16,b:30};
+  const w=W-pad.l-pad.r, h=H-pad.t-pad.b;
+  const n=hierData.length;
+
+  // Leaf order via DFS
+  const leafOrder=[];
+  function dfs(node){
+    if(!node) return;
+    if(node.members.length===1){leafOrder.push(node.members[0]);return;}
+// Fixed dfs - simplified leaf ordering
+leafOrder.push(...hierData.map((_,i)=>i));
+    // simplified - just use member order
+  }
+  // Simple leaf ordering
+  if(hierMerges._root){
+    const getLeaves=(node)=>{
+      if(!node) return [];
+      if(node.members&&node.members.length===1) return node.members;
+      if(node.left!==undefined&&node.right!==undefined){
+const lNode = hierMerges.find((m) => m.id === node.left) || {members: node.left < n ? [node.left] : []};
+const rNode = hierMerges.find((m) => m.id === node.right) || {members: node.right < n ? [node.right] : []};
+        return [...getLeaves(lNode),...getLeaves(rNode)];
+      }
+      return node.members||[];
+    };
+    const order=getLeaves(hierMerges._root);
+    if(order.length) leafOrder.push(...order); else leafOrder.push(...hierData.map((_,i)=>i));
+  } else { leafOrder.push(...hierData.map((_,i)=>i)); }
+
+  const uniq=[...new Set(leafOrder)];
+  while(uniq.length<n) uniq.push(uniq.length);
+  const leafX={};
+  uniq.forEach((l,i)=>{ leafX[l]=pad.l+(i+.5)*(w/uniq.length); });
+
+  // Max height
+  const maxH=Math.max(...hierMerges.map(m=>m.height),.001);
+  const threshY=pad.t+(1-thresh)*h;
+
+  // Draw threshold line
+  ctx.strokeStyle='rgba(245,158,11,.7)'; ctx.lineWidth=1.5; ctx.setLineDash([6,3]);
+  ctx.beginPath(); ctx.moveTo(pad.l,threshY); ctx.lineTo(pad.l+w,threshY); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='#f59e0b'; ctx.font='9px Space Grotesk';
+  ctx.fillText('← cut at '+thresh.toFixed(2),pad.l+w-60,threshY-3);
+
+  // Get cluster colors at threshold
+  const clusterMap={};
+  let colorIdx=0;
+  hierMerges.forEach(m=>{
+    const mY=pad.t+(1-m.height/maxH)*h;
+    if(mY<threshY) { m.members.forEach(i=>{ if(!(i in clusterMap)) clusterMap[i]=colorIdx; }); colorIdx=Math.min(colorIdx+1,5); }
+  });
+
+  // Draw dendrogram lines
+  const getY=(height)=>pad.t+(1-height/maxH)*h;
+const getCx = (id) => { if(id < n) return leafX[id] || pad.l + (id + .5) * (w/n); const m = hierMerges.find(x => x.id === id) || {left:0, right:1}; return (getCx(m.left) + getCx(m.right)) / 2; };
+
+  hierMerges.forEach(m=>{
+    const my=getY(m.height);
+    const lx=getCx(m.left), rx=getCx(m.right);
+const ly = m.left < n ? pad.t + h : getY((hierMerges.find(x => x.id === m.left) || {height: 0}).height);
+const ry = m.right < n ? pad.t + h : getY((hierMerges.find(x => x.id === m.right) || {height: 0}).height);
+    const col=my<threshY?COLORS[Math.min(colorIdx,5)]+'aa':'rgba(74,90,120,.7)';
+    ctx.strokeStyle=col; ctx.lineWidth=my<threshY?1.8:1;
+    ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(lx,my); ctx.lineTo(rx,my); ctx.lineTo(rx,ry); ctx.stroke();
+  });
+
+  // Leaf dots
+  uniq.forEach(l=>{
+    const cx=leafX[l], cy=pad.t+h;
+    ctx.fillStyle=l in clusterMap?COLORS[clusterMap[l]]:'#4a5a78';
+    ctx.beginPath(); ctx.arc(cx,cy,3.5,0,Math.PI*2); ctx.fill();
+  });
+
+  // Y axis ticks
+  ctx.fillStyle='#4a5a78'; ctx.font='8px JetBrains Mono';
+  [0,.5,1].forEach(v=>ctx.fillText(v.toFixed(1),2,getY(v*maxH)+3));
+
+  // Count clusters at threshold
+  const nClusters=new Set(Object.values(clusterMap)).size||1;
+  document.getElementById('hier-stats').textContent=`clusters at threshold: ${nClusters}`;
+
+  drawHierScatter(clusterMap);
+}
+
+function drawHierScatter(clusterMap){
+  const s=setupCanvas('hier-scatter',160); if(!s) return;
+  const {ctx,W,H}=s;
+  ctx.clearRect(0,0,W,H);
+  const pad=18;
+  hierData.forEach((p,i)=>{
+    const cls=i in clusterMap?clusterMap[i]:-1;
+    ctx.fillStyle=cls>=0?COLORS[cls]+'cc':'#4a5a78';
+    ctx.beginPath(); ctx.arc(pad+p.x*(W-2*pad),pad+p.y*(H-2*pad),5,0,Math.PI*2); ctx.fill();
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load',()=>{
+  initSLR();
+  initMLR();
+});
+
+window.addEventListener('resize',()=>{
+  const id=activeSectionId;
+  if(id) setTimeout(()=>initSection(id),120);
+});
+</script>
+</body>
+</html>
